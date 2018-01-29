@@ -6,6 +6,7 @@ import Button from 'd2-ui/lib/button/Button';
 import { fromSelected, fromEditDashboard } from '../actions';
 
 import { CONTROL_BAR_ROW_HEIGHT, getOuterHeight } from './ControlBarContainer';
+import { eventHandlerWrapper } from '../util';
 
 const EditBar = ({ style, onSaveChanges, onDiscardChanges }) => {
     const controlBarHeight = getOuterHeight(1, false);
@@ -34,13 +35,15 @@ const EditBar = ({ style, onSaveChanges, onDiscardChanges }) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        onSaveChanges: () => {
-            dispatch(fromEditDashboard.tSaveDashboard());
-        },
-        onDiscardChanges: () => {
-            dispatch(fromSelected.acSetSelectedEdit(false));
-            dispatch(fromEditDashboard.acSetEditDashboard({}));
-        },
+        onSaveChanges: eventHandlerWrapper(
+            dispatch,
+            fromEditDashboard.tSaveDashboard()
+        ),
+        onDiscardChanges: eventHandlerWrapper(
+            dispatch,
+            fromSelected.acSetSelectedEdit(false),
+            fromEditDashboard.acSetEditDashboard({})
+        ),
     };
 };
 
