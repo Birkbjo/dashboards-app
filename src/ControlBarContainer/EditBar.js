@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ControlBar from 'd2-ui/lib/controlbar/ControlBar';
 import Button from 'd2-ui/lib/button/Button';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import { colors } from '../colors';
 import { tSaveDashboard, acClearEditDashboard } from '../actions/editDashboard';
+import { tDeleteDashboard } from '../actions/dashboards';
 import { CONTROL_BAR_ROW_HEIGHT, getOuterHeight } from './ControlBarContainer';
 
 const styles = {
@@ -34,30 +37,103 @@ const styles = {
     },
 };
 
-const EditBar = ({ style, onSave, onDiscard }) => {
-    const controlBarHeight = getOuterHeight(1, false);
+const DeleteConfirmDialog = ({
+    dashboardName,
+    onDeleteConfirmed,
+    onContinueEditing,
+    open,
+}) => {
+    const actions = [
+        <FlatButton
+            label="Delete"
+            primary={true}
+            onClick={onDeleteConfirmed}
+        />,
+        <FlatButton
+            label="Continue editing"
+            primary={true}
+            onClick={onContinueEditing}
+        />,
+    ];
 
+    const dialogText = `Are you sure you want to delete dashboard "${dashboardName}"?`;
     return (
-        <ControlBar
-            height={controlBarHeight}
-            editMode={true}
-            expandable={false}
+        <Dialog
+            title="Confirm delete dashboard"
+            actions={actions}
+            modal={true}
+            open={open}
         >
-            <div style={styles.buttonBar}>
-                <div style={style.leftControls}>
-                    <Button style={styles.save} onClick={onSave}>
-                        Save Changes
-                    </Button>
-                </div>
-                <div style={style.rightControls}>
-                    <button style={styles.discard} onClick={onDiscard}>
-                        Exit without saving
-                    </button>
-                </div>
-            </div>
-        </ControlBar>
+            {dialogText}
+        </Dialog>
     );
 };
+
+class EditBar extends Component {
+    state = {
+        open: false,
+    };
+
+    onConfirmDelete = () => {
+        this.setState({ open: true });
+    };
+
+    onContinueEditing = () => {
+        this.setState({ open: false });
+    };
+
+    onDeleteConfirmed = () => {
+        this.setState({ open: false });
+        this.props.onDelete(this.props.dashboardId);
+    };
+
+    render() {
+        const {
+            style,
+            onSave,
+            onDiscard,
+            dashboardId,
+            dashboardName,
+        } = this.props;
+
+        const controlBarHeight = getOuterHeight(1, false);
+
+        return (
+            <ControlBar
+                height={controlBarHeight}
+                editMode={true}
+                expandable={false}
+            >
+                <div style={styles.buttonBar}>
+                    <div style={style.leftControls}>
+                        <Button style={styles.save} onClick={onSave}>
+                            Save Changes
+                        </Button>
+                        {dashboardId ? (
+                            <Button
+                                style={styles.delete}
+                                onClick={this.onConfirmDelete}
+                            >
+                                Delete dashboard
+                            </Button>
+                        ) : null}
+                    </div>
+                    <div style={style.rightControls}>
+                        <button style={styles.discard} onClick={onDiscard}>
+                            Exit without saving
+                        </button>
+                    </div>
+                </div>
+                <DeleteConfirmDialog
+                    dashboardName={dashboardName}
+                    onDeleteConfirmed={this.onDeleteConfirmed}
+                    onContinueEditing={this.onContinueEditing}
+                    open={this.state.open}
+                />
+            </ControlBar>
+        );
+    }
+}
 
 const mapDispatchToProps = dispatch => {
     return {
@@ -66,6 +142,9 @@ const mapDispatchToProps = dispatch => {
         },
         onDiscard: () => {
             dispatch(acClearEditDashboard());
+        },
+        onDelete: id => {
+            dispatch(tDeleteDashboard(id));
         },
     };
 };

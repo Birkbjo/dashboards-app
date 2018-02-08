@@ -18,7 +18,6 @@ import {
 import * as fromActions from '../actions';
 import * as fromReducers from '../reducers';
 import { orObject, orArray } from '../util';
-import { sGetSelectedId } from '../reducers/selected';
 
 const dashboardBarStyles = {
     scrollWrapper: {
@@ -55,7 +54,7 @@ const DashboardsBar = ({
     dashboards,
     name,
     rows,
-    selectedId,
+    dashboardId,
     isExpanded,
     onChangeHeight,
     onToggleExpanded,
@@ -108,7 +107,7 @@ const DashboardsBar = ({
                         label={dashboard.name}
                         avatar={dashboard.starred ? 'star' : null}
                         color={
-                            dashboard.id === selectedId ? 'primary' : undefined
+                            dashboard.id === dashboardId ? 'primary' : undefined
                         }
                         onClick={onDashboardSelectWrapper(
                             dashboard.id,
@@ -144,7 +143,6 @@ const mapStateToProps = state => {
         dashboards: fromDashboards.sGetFromState(state),
         name: fromFilter.sGetFilterName(state),
         rows: (state.controlBar && state.controlBar.rows) || 1,
-        selectedId: sGetSelectedId(state),
         isExpanded:
             state.controlBar.expanded &&
             state.controlBar.rows < EXPANDED_ROW_COUNT,

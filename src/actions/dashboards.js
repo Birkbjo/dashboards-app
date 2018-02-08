@@ -2,10 +2,15 @@ import { actionTypes } from '../reducers';
 import {
     getCustomDashboards,
     sGetStarredDashboardIds,
+    sGetById,
 } from '../reducers/dashboards';
 import { sGetUsername } from '../reducers/user';
 import { tSetSelectedDashboardById } from './selected';
-import { apiFetchDashboards, apiStarDashboard } from '../api/dashboards';
+import {
+    apiFetchDashboards,
+    apiStarDashboard,
+    deleteDashboard,
+} from '../api/dashboards';
 import { getPreferredDashboard } from '../api/localStorage';
 import { arrayToIdMap } from '../util';
 
@@ -31,8 +36,12 @@ export const tSetDashboards = () => async (dispatch, getState) => {
         dispatch(acSetDashboards(dashboards));
         const state = getState();
 
+        const preferredDashboardId = sGetById(
+            getPreferredDashboard(sGetUsername(state))
+        );
+
         const dashboardId =
-            getPreferredDashboard(sGetUsername(state)) ||
+            preferredDashboardId ||
             sGetStarredDashboardIds(state)[0] ||
             dashboards[0].id;
 
@@ -47,6 +56,8 @@ export const tSetDashboards = () => async (dispatch, getState) => {
     };
 
     try {
+        console.log('fetch the dashboards');
+
         const collection = await apiFetchDashboards();
         return onSuccess(collection);
     } catch (err) {
@@ -69,5 +80,20 @@ export const tStarDashboard = (id, isStarred) => async (dispatch, getState) => {
         return onSuccess(id);
     } catch (err) {
         return onError(err);
+    }
+};
+
+export const tDeleteDashboard = id => async dispatch => {
+    const onSuccess = () => {
+        return dispatch(tSetDashboards);
+    };
+
+    try {
+        await deleteDashboard(id);
+
+        return onSuccess();
+    } catch (err) {
+        console.log('Error (deleteDashboard): ', err);
+        return err;
     }
 };
