@@ -6,6 +6,7 @@ import {
 } from '../reducers/dashboards';
 import { sGetUsername } from '../reducers/user';
 import { tSetSelectedDashboardById } from './selected';
+import { acClearEditDashboard } from './editDashboard';
 import {
     apiFetchDashboards,
     apiStarDashboard,
@@ -85,6 +86,7 @@ export const tStarDashboard = (id, isStarred) => async (dispatch, getState) => {
 
 export const tDeleteDashboard = id => async dispatch => {
     const onSuccess = () => {
+        dispatch(acClearEditDashboard());
         return dispatch(tSetDashboards);
     };
 
