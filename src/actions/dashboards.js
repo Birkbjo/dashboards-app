@@ -87,7 +87,8 @@ export const tStarDashboard = (id, isStarred) => async (dispatch, getState) => {
 export const tDeleteDashboard = id => async dispatch => {
     const onSuccess = () => {
         dispatch(acClearEditDashboard());
-        return dispatch(tSetDashboards);
+
+        return dispatch(tSetDashboards());
     };
 
     try {

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import ControlBar from 'd2-ui/lib/controlbar/ControlBar';
 import Button from 'd2-ui/lib/button/Button';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import { colors } from '../colors';
 import { tSaveDashboard, acClearEditDashboard } from '../actions/editDashboard';
 import { tDeleteDashboard } from '../actions/dashboards';
@@ -18,7 +17,7 @@ const styles = {
         boxShadow:
             '0 0 2px 0 rgba(0,0,0,0.12), 0 2px 2px 0 rgba(0,0,0,0.24), 0 0 8px 0 rgba(0,0,0,0.12), 0 0 8px 0 rgba(0,0,0,0.24)',
     },
-    discard: {
+    secondary: {
         color: colors.royalBlue,
         backgroundColor: 'transparent',
         border: 'none',
@@ -28,6 +27,7 @@ const styles = {
         padding: '5px',
         height: '36px',
         cursor: 'pointer',
+        marginLeft: '10px',
     },
     buttonBar: {
         height: CONTROL_BAR_ROW_HEIGHT,
@@ -44,19 +44,14 @@ const DeleteConfirmDialog = ({
     open,
 }) => {
     const actions = [
-        <FlatButton
-            label="Delete"
-            primary={true}
-            onClick={onDeleteConfirmed}
-        />,
-        <FlatButton
-            label="Continue editing"
-            primary={true}
-            onClick={onContinueEditing}
-        />,
+        <Button onClick={onDeleteConfirmed} style={styles.secondary}>
+            Delete
+        </Button>,
+        <Button onClick={onContinueEditing} style={styles.secondary}>
+            Continue editing
+        </Button>,
     ];
 
-    const dialogText = `Are you sure you want to delete dashboard "${dashboardName}"?`;
     return (
         <Dialog
             title="Confirm delete dashboard"
@@ -64,7 +59,7 @@ const DeleteConfirmDialog = ({
             modal={true}
             open={open}
         >
-            {dialogText}
+            {`Are you sure you want to delete dashboard "${dashboardName}"?`}
         </Dialog>
     );
 };
@@ -94,6 +89,7 @@ class EditBar extends Component {
             onDiscard,
             dashboardId,
             dashboardName,
+            deleteAccess,
         } = this.props;
 
         const controlBarHeight = getOuterHeight(1, false);
@@ -109,17 +105,17 @@ class EditBar extends Component {
                         <Button style={styles.save} onClick={onSave}>
                             Save Changes
                         </Button>
-                        {dashboardId ? (
-                            <Button
-                                style={styles.delete}
+                        {dashboardId && deleteAccess ? (
+                            <button
+                                style={styles.secondary}
                                 onClick={this.onConfirmDelete}
                             >
                                 Delete dashboard
-                            </Button>
+                            </button>
                         ) : null}
                     </div>
                     <div style={style.rightControls}>
-                        <button style={styles.discard} onClick={onDiscard}>
+                        <button style={styles.secondary} onClick={onDiscard}>
                             Exit without saving
                         </button>
                     </div>

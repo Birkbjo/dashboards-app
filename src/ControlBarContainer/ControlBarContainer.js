@@ -21,11 +21,12 @@ const style = {
     },
 };
 
-const ControlBar = ({ edit, dashboardId, dashboardName }) => {
+const ControlBar = ({ edit, dashboardId, dashboardName, deleteAccess }) => {
     return edit ? (
         <EditBar
             dashboardId={dashboardId}
             dashboardName={dashboardName}
+            deleteAccess={deleteAccess}
             style={style}
         />
     ) : (
@@ -39,7 +40,8 @@ const mapStateToProps = state => {
     return {
         edit: fromEditDashboard.sGetIsEditing(state),
         dashboardId: dashboard ? dashboard.id : '',
-        dashboardName: dashboard ? dashboard.displayName : '',
+        dashboardName: dashboard ? dashboard.name : '',
+        deleteAccess: dashboard ? dashboard.access.delete : false,
     };
 };
 
