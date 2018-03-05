@@ -113,6 +113,8 @@ const configureFilter = (filter = {}) => {
 };
 
 export const load = async (item, credentials, activeType, filter = {}) => {
+    // return false;
+    return Promise.reject('rejected from the plugin load fn');
     const config = {
         ...(await configureFavorite(item, activeType)),
         ...configureFilter(filter),
@@ -123,6 +125,7 @@ export const load = async (item, credentials, activeType, filter = {}) => {
     const plugin = itemTypeMap[type].plugin;
 
     loadPlugin(plugin, config, credentials);
+    return Promise.resolve('resolved');
 };
 
 export const resize = item => {

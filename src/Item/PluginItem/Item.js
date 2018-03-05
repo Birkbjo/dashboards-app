@@ -46,6 +46,7 @@ const pluginCredentials = d2 => {
 class Item extends Component {
     state = {
         showFooter: false,
+        error: false,
     };
 
     pluginCredentials = null;
@@ -55,7 +56,7 @@ class Item extends Component {
             orObject(this.props.visualization).activeType ||
             this.props.item.type;
 
-        return !!itemTypeMap[type].plugin;
+        return !!itemTypeMap[type].plugin && !this.state.error;
     };
 
     shouldPluginReload = prevProps => {
@@ -75,7 +76,7 @@ class Item extends Component {
         return reloadAllowed && (visChanged || filterChanged);
     };
 
-    reloadPlugin = prevProps => {
+    reloadPlugin = async prevProps => {
         if (this.pluginIsAvailable() && this.shouldPluginReload(prevProps)) {
             const prevVis = orObject(prevProps.visualization);
             const currentVis = this.props.visualization;
@@ -95,33 +96,45 @@ class Item extends Component {
                     prevVis.activeType || this.props.item.type
                 );
 
-                pluginManager.load(
-                    this.props.item,
-                    this.pluginCredentials,
-                    useActiveType ? currentVis.activeType : null,
-                    this.props.itemFilter
-                );
+                try {
+                    await pluginManager.load(
+                        this.props.item,
+                        this.pluginCredentials,
+                        useActiveType ? currentVis.activeType : null,
+                        this.props.itemFilter
+                    );
+                } catch (error) {
+                    this.setState({ error: true });
+                }
             }
         }
     };
 
-    componentDidMount() {
+    async componentDidMount() {
         this.pluginCredentials = pluginCredentials(this.context.d2);
 
-        if (this.pluginIsAvailable()) {
-            pluginManager.load(
-                this.props.item,
-                this.pluginCredentials,
-                !this.props.editMode
-                    ? orObject(this.props.visualization).activeType
-                    : null,
-                this.props.itemFilter
-            );
+        try {
+            if (this.pluginIsAvailable()) {
+                await pluginManager.load(
+                    this.props.item,
+                    this.pluginCredentials,
+                    !this.props.editMode
+                        ? orObject(this.props.visualization).activeType
+                        : null,
+                    this.props.itemFilter
+                );
+            }
+        } catch (error) {
+            this.setState({ error: true });
         }
     }
 
-    componentDidUpdate(prevProps) {
-        this.reloadPlugin(prevProps);
+    async componentDidUpdate(prevProps) {
+        try {
+            await this.reloadPlugin(prevProps);
+        } catch (error) {
+            this.setState({ error: true });
+        }
     }
 
     onToggleFooter = () => {
