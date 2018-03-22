@@ -43,6 +43,14 @@ export const acReceivedVisualization = value => ({
     value,
 });
 
+export const acSetSelectedLoad = (id, name = '') => ({
+    type: actionTypes.SET_SELECTED_LOAD,
+    payload: {
+        id,
+        name,
+    },
+});
+
 export const acReceivedActiveVisualization = (id, type, activeType) => {
     const action = {
         type: actionTypes.RECEIVED_ACTIVE_VISUALIZATION,
@@ -61,6 +69,7 @@ export const tSetSelectedDashboardById = (id, name = '') => async (
     dispatch,
     getState
 ) => {
+    return dispatch(acSetSelectedLoad(id, name));
     dispatch(acSetSelectedIsLoading(true));
 
     const snackbarTimeout = setTimeout(() => {

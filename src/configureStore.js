@@ -2,9 +2,10 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import { createLogger } from 'redux-logger';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
-
+import { createEpicMiddleware } from 'redux-observable';
+import Epics from './actions/epics';
 const configureStore = () => {
-    const middleware = [thunk];
+    const middleware = [createEpicMiddleware(Epics), thunk];
 
     // Enable Redux devtools if extension is installed instead of redux-logger
     const composeEnhancers =

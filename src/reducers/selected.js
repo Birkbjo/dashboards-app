@@ -7,6 +7,7 @@ export const actionTypes = {
     SET_SELECTED_ID: 'SET_SELECTED_ID',
     SET_SELECTED_ISLOADING: 'SET_SELECTED_ISLOADING',
     SET_SELECTED_SHOWDESCRIPTION: 'SET_SELECTED_SHOWDESCRIPTION',
+    SET_SELECTED_LOAD: 'SET_SELECTED_LOAD',
 };
 
 export const DEFAULT_SELECTED_ID = null;
@@ -21,6 +22,8 @@ export const DEFAULT_SELECTED_SHOWDESCRIPTION = false;
  */
 const id = (state = DEFAULT_SELECTED_ID, action) => {
     switch (action.type) {
+        //   case actionTypes.SET_SELECTED_LOAD:
+        //      return validateReducer(action.payload.id, DEFAULT_SELECTED_ID);
         case actionTypes.SET_SELECTED_ID:
             return validateReducer(action.value, DEFAULT_SELECTED_ID);
         default:

@@ -60,9 +60,9 @@
         "react-tap-event-plugin": "^3.0.2",
         "redux": "^3.7.2",
         "redux-logger": "^3.0.6",
-        "redux-observable": "^0.17.0",
+        "redux-observable": "^0.18.0",
         "redux-thunk": "^2.2.0",
-        "rxjs": "^5.5.2",
+        "rxjs": "^5.5.6",
         "style-loader": "0.19.0",
         "sw-precache-webpack-plugin": "0.11.4",
         "url-loader": "0.6.2",
@@ -79,11 +79,13 @@
         "coverage": "npm test -- --coverage",
         "test": "node scripts/test.js --env=jsdom",
         "lint": "eslint -c .eslintrc.json src",
-        "prebuild": "rm -rf build && npm run lint && mkdir build && npm run manifest",
+        "prebuild":
+            "rm -rf build && npm run lint && mkdir build && npm run manifest",
         "postbuild": "cp -r public/i18n build",
         "manifest": "d2-manifest package.json build/manifest.webapp",
         "deploy": "npm run build && mvn clean deploy",
-        "prettify": "prettier \"src/{**/*,*}.js\" --write"
+        "prettify": "prettier \"src/{**/*,*}.js\" --write",
+        "analyze": "source-map-explorer build/static/js/main.*"
     },
     "manifest.webapp": {
         "name": "Dashboards app",
@@ -109,12 +111,8 @@
         }
     },
     "jest": {
-        "collectCoverageFrom": [
-            "src/**/*.{js,jsx,mjs}"
-        ],
-        "setupFiles": [
-            "<rootDir>/config/polyfills.js"
-        ],
+        "collectCoverageFrom": ["src/**/*.{js,jsx,mjs}"],
+        "setupFiles": ["<rootDir>/config/polyfills.js"],
         "testMatch": [
             "<rootDir>/src/**/__tests__/**/*.{js,jsx,mjs}",
             "<rootDir>/src/**/?(*.)(spec|test).{js,jsx,mjs}"
@@ -124,7 +122,8 @@
         "transform": {
             "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
             "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-            "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+            "^(?!.*\\.(js|jsx|mjs|css|json)$)":
+                "<rootDir>/config/jest/fileTransform.js"
         },
         "transformIgnorePatterns": [
             "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
@@ -143,9 +142,7 @@
         ]
     },
     "babel": {
-        "presets": [
-            "react-app"
-        ]
+        "presets": ["react-app"]
     },
     "eslintConfig": {
         "extends": "react-app"
