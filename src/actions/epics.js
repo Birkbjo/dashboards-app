@@ -58,6 +58,8 @@ const loadDashBoard = (action$, store) =>
         ofType(actionTypes.SET_SELECTED_LOAD),
         map(action => action.payload),
         switchMap(({ id, name }) => {
+            //We create an observable from the promise,
+            //as we need to return multiple actions
             const req = from(apiFetchSelected(id)).pipe(
                 switchMap(selected => {
                     const dashboard = {
@@ -72,20 +74,22 @@ const loadDashBoard = (action$, store) =>
                 }),
                 catchError(e => [{ type: 'LOAD_DASHBOARD_ERROR' }])
             );
+            //Snackbar action to observable
             const snackBar = of(
                 acReceivedSnackbarMessage({
                     message: { ...loadingDashboardMsg, name },
                     open: true,
                 })
-            ).pipe(delay(500), takeUntil(req));
+            ).pipe(delay(500), takeUntil(req)); //delay it 500ms, but cancel if request has resolved in this time
             let withSnackbar = merge(snackBar, req);
-            //if its loaded
+            //if its loaded, we select instantly, but also send the request so we get updated data
             if (store.getState().dashboards[id].dashboardItems[0].type) {
                 return concat(
                     [acSetSelectedIsLoading(false), acSetSelectedId(id)],
                     req
                 );
             }
+            //return the actions!
             return concat([acSetSelectedIsLoading(true)], withSnackbar, [
                 acSetSelectedId(id),
                 acSetSelectedIsLoading(false),
